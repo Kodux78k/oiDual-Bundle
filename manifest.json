@@ -1,0 +1,17 @@
+{
+  "name": "dual.Infodose — Fusion Unificado (Chat Cinematográfico + Fusion HUD)",
+  "short_name": "DUAL..app",
+  "description": "",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#000",
+  "theme_color": "#05070a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
