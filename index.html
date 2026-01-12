@@ -1767,45 +1767,36 @@ background-attachment: fixed;
       });
     }
 
-    // service worker registration helper (optional UI triggered)
-    (function registerSW(){
-      if (!('serviceWorker' in navigator)) return;
-      try {
-        navigator.serviceWorker.register('./sw.js', { scope: '/' }).then(reg => {
-          if (reg.waiting) {
-            // if you want: show an update button (updateBtn) and wire it to postMessage SKIP_WAITING
-            const updateBtn = document.getElementById('updateBtn');
-            if (updateBtn) {
-              updateBtn.style.display = 'inline-block';
-              updateBtn.onclick = () => {
-                try {
-                  const waiting = reg.waiting;
-                  if (!waiting) { reg.update(); showToaster('Atualizando...', 'default'); return; }
-                  waiting.postMessage({ type: 'SKIP_WAITING' });
-                  updateBtn.style.display = 'none';
-                  showToaster('Aplicando atualização...', 'default');
-                } catch(e){ console.warn(e); }
-              };
+    // service worker registration — registra apenas depois do window.load (mais confiável para install prompt)
+window.addEventListener('load', () => {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    navigator.serviceWorker.register('./sw.js', { scope: '/' })
+      .then(reg => {
+        console.log('[SW] registrado com scope:', reg.scope);
+        // expõe botão de update caso exista SW esperando
+        if (reg.waiting) {
+          const updateBtn = document.getElementById('updateBtn');
+          if (updateBtn) updateBtn.style.display = 'inline-block';
+        }
+        reg.addEventListener('updatefound', () => {
+          const newSW = reg.installing;
+          if (!newSW) return;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+              const updateBtn = document.getElementById('updateBtn');
+              if (updateBtn) updateBtn.style.display = 'inline-block';
             }
-          }
-          reg.addEventListener('updatefound', () => {
-            const newSW = reg.installing;
-            if (!newSW) return;
-            newSW.addEventListener('statechange', () => {
-              if (newSW.state === 'installed') {
-                if (navigator.serviceWorker.controller) {
-                  const updateBtn = document.getElementById('updateBtn');
-                  if (updateBtn) { updateBtn.style.display = 'inline-block'; }
-                }
-              }
-            });
           });
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            try { window.location.reload(); } catch(e){}
-          });
-        }).catch(e=>console.warn('SW reg fail',e));
-      } catch(e){}
-    })();
+        });
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('[SW] controllerchange — recarregando para aplicar SW');
+          try { window.location.reload(); } catch(e){}
+        });
+      })
+      .catch(err => console.warn('[SW] registro falhou', err));
+  } catch(e) { console.warn('[SW] registro erro', e); }
+});
 
   } // end initApp
 
