@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pwa-dual.infodos-v1';
+const CACHE_NAME = 'pwa-dual.infodose-bundle-v0';
 const ASSETS = [
     './',
     'index.html',
