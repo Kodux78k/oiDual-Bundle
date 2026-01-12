@@ -1,9 +1,9 @@
 const CACHE_NAME = 'pwa-dual.infodose-bundle-v0';
 const ASSETS = [
     './',
-    'index.html',
-    'manifest.json',
-    '/app.bundle.js'
+    './index.html',
+    './manifest.json',
+    './app.bundle.js'
 ];
 
 // Instalação: Cache inicial
